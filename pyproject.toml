@@ -1,0 +1,22 @@
+[project]
+name = "aiagents"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Giorgi", email = "giobuisness97@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "mcp[cli]>=2.3.0",
+    "openai>=2.48.0",
+    "python-dotenv>=1.2.1",
+    "rich>=15.0.0",
+]
+
+[project.scripts]
+aiagents = "aiagents:main"
+
+[build-system]
+requires = ["uv_build>=0.12.23,<0.13.0"]
+build-backend = "uv_build"

@@ -1,0 +1,2 @@
+- The user's name is Giorgi.
+- Giorgi is from Kutaisi, Georgia.
