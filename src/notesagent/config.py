@@ -7,7 +7,7 @@ from pathlib import Path  # Builds file paths safely on every operating system.
 from dotenv import load_dotenv  # Loads variables from the local .env file.
 
 
-# Walk from src/aiagents/config.py back to the project folder.
+# Walk from src/notesagent/config.py back to the project folder.
 PROJECT_ROOT = Path(__file__).parents[2]
 # The agent reads its behavior instructions from this separate text file.
 PROMPT_FILE = Path(__file__).parent / "prompts" / "system_prompt.txt"

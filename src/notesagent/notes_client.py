@@ -32,6 +32,12 @@ class AppleNotesClient:
         # Send title and content as independent arguments to the JXA script.
         return self._as_json(self._run_jxa(self._notes_script("create"), title, content))
 
+    def update_note(self, title: str, content: str, new_title: str | None = None) -> str:
+        """Replace the body of one uniquely titled note, optionally renaming it."""
+        return self._as_json(
+            self._run_jxa(self._notes_script("update"), title, content, new_title or "")
+        )
+
     def delete_note(self, title: str) -> str:
         """Delete one uniquely titled note, moving it to Recently Deleted."""
         # The JXA script rejects missing and duplicate titles before it deletes.
@@ -70,7 +76,7 @@ class AppleNotesClient:
             const app = Application("Notes");
             // Read the command line values passed by Python after --.
             const argv = $.NSProcessInfo.processInfo.arguments;
-            // Python supplies this trusted action name: list, read, search, create, or delete.
+            // Python supplies this trusted action name: list, read, search, create, update, or delete.
             const action = {json.dumps(action)};
             // Copy command-line values into a normal JavaScript array.
             const userArgs = [];
@@ -80,6 +86,7 @@ class AppleNotesClient:
             // The first argument is a title or search text; the second is note content.
             const query = userArgs[0] || "";
             const content = userArgs[1] || "";
+            const newTitle = userArgs[2] || "";
             // Request the user's Notes collection from the native app.
             const notes = app.notes();
             // Notes stores bodies as HTML, so convert returned bodies to readable text.
@@ -106,6 +113,23 @@ class AppleNotesClient:
                 // Put the new note into the default account and default folder.
                 app.defaultAccount.defaultFolder.notes.push(note);
                 result = {{ title: String(note.name()), message: "Note created successfully." }};
+            }}
+            }} else if (action === "update") {{
+            // Update only one exact title so a broad request cannot change several notes.
+            const matches = notes.filter(item => String(item.name()).toLowerCase() === query.toLowerCase());
+            if (!query) {{
+                result = {{ error: "A note title is required." }};
+            }} else if (matches.length === 0) {{
+                result = {{ error: `No note found with the title "${{query}}".` }};
+            }} else if (matches.length > 1) {{
+                result = {{ error: `Found ${{matches.length}} notes named "${{query}}". Updating requires a unique title.` }};
+            }} else {{
+                const note = matches[0];
+                note.body = `<div>${{escapeHtml(content)}}</div>`;
+                if (newTitle) {{
+                    note.name = newTitle;
+                }}
+                result = {{ title: String(note.name()), message: "Note updated successfully." }};
             }}
             }} else if (action === "delete") {{
             // Match exactly so a broad search phrase can never delete several notes.

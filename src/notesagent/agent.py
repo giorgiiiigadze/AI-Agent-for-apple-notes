@@ -96,6 +96,7 @@ class NotesAgent:
             "read_note": self.notes.read_note,
             "search_notes": self.notes.search_notes,
             "create_note": self.notes.create_note,
+            "update_note": self.notes.update_note,
             "delete_note": self.notes.delete_note,
         }
         tool = tools.get(name)
@@ -132,6 +133,7 @@ class NotesAgent:
             {"type": "function", "name": "read_note", "description": "Read a single Apple Note by its exact title. Use list_notes or search_notes first when uncertain.", "parameters": {"type": "object", "properties": {"title": {"type": "string"}}, "required": ["title"]}, "strict": False},
             {"type": "function", "name": "search_notes", "description": "Search Apple Notes by words in their title or body. It returns matching titles and text, useful for finding lists and tasks.", "parameters": {"type": "object", "properties": {"query": {"type": "string"}}, "required": ["query"]}, "strict": False},
             {"type": "function", "name": "create_note", "description": "Create a new Apple Note in the default folder. Use only when the user explicitly asks to create a note.", "parameters": {"type": "object", "properties": {"title": {"type": "string"}, "content": {"type": "string"}}, "required": ["title", "content"]}, "strict": False},
+            {"type": "function", "name": "update_note", "description": "Replace the body of one uniquely titled Apple Note, optionally renaming it. Use only when the user explicitly asks to edit or modify that note. Read the note first, and use its exact title.", "parameters": {"type": "object", "properties": {"title": {"type": "string"}, "content": {"type": "string"}, "new_title": {"type": "string", "description": "Optional replacement title."}}, "required": ["title", "content"]}, "strict": False},
             {"type": "function", "name": "delete_note", "description": "Move exactly one Apple Note with a unique exact title to Recently Deleted. Use only when the user explicitly asks to delete that note.", "parameters": {"type": "object", "properties": {"title": {"type": "string"}}, "required": ["title"]}, "strict": False},
         ]
 
